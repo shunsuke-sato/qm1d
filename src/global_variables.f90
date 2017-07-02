@@ -45,10 +45,6 @@ module global_variables
   integer,parameter :: NLanczos = 6
   complex(zp),allocatable :: zwfn_Lanczos(:,:,:)
 
-! temporary
-  real(dp),allocatable :: tmp_wfn(:,:),tmp_hwfn(:,:),tmp_wfn_b(:,:)
-  complex(zp),allocatable :: ztmp_wfn(:,:),ztmp_hwfn(:,:),ztmp_wfn_b(:,:)
-
 ! collision
   real(dp) :: Ekin0, x0_col, delta_x_col
 

@@ -8,6 +8,7 @@ subroutine preparation_GS
   implicit none
   integer :: ix,iy
   real(dp) :: tmp,r
+  real(dp) :: tmp_wfn(0:Nx,0:Nx)
 
   write(*,'(A)')'===== preparatin_GS =============================================================='
   write(*,'(A)')

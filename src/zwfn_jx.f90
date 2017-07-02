@@ -9,6 +9,7 @@ subroutine zwfn_jx
   integer :: ix,iy
   real(dp) :: tmp
   complex(zp) :: ztmp
+  complex(zp) :: ztmp_wfn_b(0-4:Nx+4,0-4:Nx+4)
 
   jx(:)=0d0
 

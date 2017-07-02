@@ -1,0 +1,15 @@
+# log files.
+*.out
+*.optrpt
+*.log
+*.dat
+
+# objects.
+*.mod
+*.o
+
+# build temp dir.
+.build_temp*/
+
+# others
+*~ 

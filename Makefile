@@ -12,7 +12,7 @@ OBJ_dir = $(addprefix object/,$(OBJ))
 
 PROG = tdse1d2p
 
-$(PROG):global_variables.o $(OBJ)
+$(PROG):global_variables.o hpsi.o $(OBJ)
 	$(FC) -o $(PROG) $(OBJ_dir) $(LN)
 
 main.o:main.f90

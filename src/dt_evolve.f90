@@ -5,16 +5,18 @@
 !---------------------------------------------------!
 subroutine dt_evolve(ft)
   use global_variables
+  use hpsi
   implicit none
   integer :: iexp
   real(dp) :: ft
   complex(zp) :: zs
+  complex(zp) :: ztmp_wfn(0:Nx,0:Nx),ztmp_hwfn(0:Nx,0:Nx)
 
   ztmp_wfn(:,:) = zwfn(:,:)
   zs = 1d0
   do iexp = 1,4
      zs = zs*(-zI*dt)/dble(iexp)
-     call zhpsi(ft)
+     call zhpsi(ztmp_wfn,ztmp_hwfn,ft)
      zwfn(:,:) = zwfn(:,:) + zs*ztmp_hwfn(:,:)
      ztmp_wfn(:,:) = ztmp_hwfn(:,:)
   end do
@@ -23,6 +25,7 @@ end subroutine dt_evolve
 !=======10========20========30========40========50========60========70========80========90=======100
 subroutine dt_evolve_Lanczos(ft)
   use global_variables
+  use hpsi
   implicit none
   integer :: iexp,j
   real(dp) :: ft
@@ -37,6 +40,7 @@ subroutine dt_evolve_Lanczos(ft)
   real(8),allocatable :: rwork(:),w(:)
   integer :: info
   integer :: ix,iy
+  complex(zp) :: ztmp_wfn(0:Nx,0:Nx),ztmp_hwfn(0:Nx,0:Nx)
 
   lwork=6*NLanczos
   allocate(work_lp(lwork),rwork(3*NLanczos-2),w(NLanczos))
@@ -49,7 +53,7 @@ subroutine dt_evolve_Lanczos(ft)
 
   do j = 1,NLanczos
     ztmp_wfn(:,:) = zwfn_Lanczos(:,:,j)
-    call zhpsi(ft)
+    call zhpsi(ztmp_wfn,ztmp_hwfn,ft)
     Hamiltonian_L(j,j) = sum(conjg(ztmp_wfn)*ztmp_hwfn)*dx**2
 
     if(j == NLanczos)exit
