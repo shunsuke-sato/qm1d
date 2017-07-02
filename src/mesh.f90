@@ -6,6 +6,7 @@
 subroutine mesh
   use global_variables
   use hpsi
+  use density_matrix
   implicit none
   integer :: ix, iy 
 
@@ -27,6 +28,7 @@ subroutine mesh
   end do
 
   call initialize_hpsi
+  call initialize_density_matrix
 
   write(*,'(A)')'===== Complete Making mesh ========================================================'
   return
