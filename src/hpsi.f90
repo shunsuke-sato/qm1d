@@ -42,7 +42,14 @@ contains
     c3=-0.5d0*cN3/(dx**2)
     c4=-0.5d0*cN4/(dx**2)
 
-    tmp_wfn_b(0:Nx,0:Nx) = tmp_wfn(0:Nx,0:Nx)
+!$omp parallel do private(ix,iy)
+    do iy = 0,Nx
+      do ix = 0,Nx
+        tmp_wfn_b(ix,iy) = tmp_wfn(ix,iy)
+      end do
+    end do
+
+!$omp parallel do private(ix,iy)
     do iy=0,Nx
       do ix=0,Nx
         tmp_hwfn(ix,iy)=2d0*c0*tmp_wfn_b(ix,iy) &
@@ -52,8 +59,13 @@ contains
           + c4*(tmp_wfn_b(ix+4,iy) + tmp_wfn_b(ix-4,iy) + tmp_wfn_b(ix,iy+4) + tmp_wfn_b(ix,iy-4)) 
       end do
     end do
-    
-    tmp_hwfn(:,:) = tmp_hwfn(:,:) + v_all(:,:)*tmp_wfn(:,:)
+
+!$omp parallel do private(ix,iy)    
+    do iy = 0,Nx
+      do ix = 0,Nx
+        tmp_hwfn(ix,iy) = tmp_hwfn(ix,iy) + v_all(ix,iy)*tmp_wfn(ix,iy)
+      end do
+    end do
     return
   end subroutine rhpsi
   !-----------------------------------------------------------------------------------------
@@ -72,7 +84,14 @@ contains
     c3=-0.5d0*cN3/(dx**2)
     c4=-0.5d0*cN4/(dx**2)
 
-    ztmp_wfn_b(0:Nx,0:Nx) = ztmp_wfn(0:Nx,0:Nx)
+!$omp parallel do private(ix,iy)    
+    do iy = 0,Nx
+      do ix = 0,Nx
+        ztmp_wfn_b(ix,iy) = ztmp_wfn(ix,iy)
+      end do
+    end do
+
+!$omp parallel do private(ix,iy)    
     do iy=0,Nx
       do ix=0,Nx
         ztmp_hwfn(ix,iy)=2d0*c0*ztmp_wfn_b(ix,iy) &
@@ -83,7 +102,12 @@ contains
       end do
     end do
     
-    ztmp_hwfn(:,:) = ztmp_hwfn(:,:) + (v_all(:,:)+ft*xyn(:,:))*ztmp_wfn(:,:)
+!$omp parallel do private(ix,iy)
+    do iy = 0,Nx
+      do ix = 0,Nx
+        ztmp_hwfn(ix,iy) = ztmp_hwfn(ix,iy) + (v_all(ix,iy)+ft*xyn(ix,iy))*ztmp_wfn(ix,iy)
+      end do
+    end do
     
     return
   end subroutine zhpsi

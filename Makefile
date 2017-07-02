@@ -1,4 +1,4 @@
-FC = gfortran -O2 ## gfotran
+FC = gfortran -O2 -fopenmp ## gfotran
 #FC = gfortran -O0 -fbounds-check ## gfotran debug
 #FC = ifort -O3 -xHOST -ipo -ip ## intel
 
