@@ -6,6 +6,7 @@
 subroutine preparation_GS
   use global_variables
   implicit none
+  real(dp),parameter :: sigma0 = sqrt(2d0)
   integer :: ix,iy
   real(dp) :: tmp,r
   real(dp) :: tmp_wfn(0:Nx,0:Nx)
@@ -47,7 +48,8 @@ subroutine preparation_GS
   do ix=0,Nx
 !     v_ext(ix) = 0.5d0*xn(ix)**2
 !     v_ext(ix) = -2d0/sqrt(1d0+xn(ix)**2)
-     v_ext(ix) = -1d0/sqrt(1d0+xn(ix)**2)
+!     v_ext(ix) = -1d0/sqrt(1d0+xn(ix)**2)
+     v_ext(ix) = -1d0/sqrt(sigma0**2+xn(ix)**2)
   end do
 !  v_KS_tdehf_old = v_ext
 !  v_KS_tdehf = v_ext
@@ -56,8 +58,9 @@ subroutine preparation_GS
   do iy=0,Nx
   do ix=0,Nx
      r = xn(ix) - xn(iy)
-     v_int(ix,iy) = 0d0 !1d0/sqrt(1d0+r**2) ! debut
+!     v_int(ix,iy) = 0d0 !1d0/sqrt(1d0+r**2) ! debut
 !     v_int(ix,iy) = 1d0/sqrt(1d0+r**2)
+     v_int(ix,iy) = 1d0/sqrt(sigma0**2+r**2)
   end do
   end do
 
