@@ -5,6 +5,7 @@
 !---------------------------------------------------!
 subroutine GS_CG
   use global_variables
+  use hpsi
   implicit none
   real(dp),allocatable :: xvec(:,:),pvec(:,:),rvec(:,:)
   real(dp),allocatable :: hxvec(:,:),gvec(:,:),hpvec(:,:)
@@ -23,7 +24,7 @@ subroutine GS_CG
 
   xvec(:,:)=wfn(:,:)
 
-  tmp_wfn = xvec; call hpsi; hxvec = tmp_hwfn
+  call rhpsi(xvec,hxvec)
   
   xx=sum(xvec(:,:)**2)*dx**2
   xhx=sum(xvec(:,:)*hxvec(:,:))*dx**2
@@ -41,7 +42,7 @@ subroutine GS_CG
      end select
      gg=gg0
 
-     tmp_wfn = pvec; call hpsi; hpvec = tmp_hwfn
+     call rhpsi(pvec,hpvec)
         
      pp=sum(pvec(:,:)**2)*dx**2
      php=sum(pvec(:,:)*hpvec(:,:))*dx**2
@@ -60,7 +61,7 @@ subroutine GS_CG
      
      xvec(:,:)=xvec(:,:)+alpha*pvec(:,:)
 
-     tmp_wfn = xvec; call hpsi; hxvec = tmp_hwfn
+     call rhpsi(xvec,hxvec)
      xx=sum(xvec(:,:)**2)*dx**2
      xhx=sum(xvec(:,:)*hxvec(:,:))*dx**2
      lambda=xhx/xx
@@ -70,7 +71,7 @@ subroutine GS_CG
   end do
 
   xvec(:,:)=xvec(:,:)/sqrt(xx)
-  tmp_wfn = xvec; call hpsi; hxvec = tmp_hwfn
+  call rhpsi(xvec,hxvec)
   esp=sum(xvec(:,:)*hxvec(:,:))*dx**2
   esp_res=sum((hxvec(:,:)-esp*xvec(:,:))**2)*dx**2
   wfn(:,:)=xvec(:,:)

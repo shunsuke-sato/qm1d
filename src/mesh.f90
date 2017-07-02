@@ -5,6 +5,7 @@
 !---------------------------------------------------!
 subroutine mesh
   use global_variables
+  use hpsi
   implicit none
   integer :: ix, iy 
 
@@ -25,6 +26,7 @@ subroutine mesh
   end do
   end do
 
+  call initialize_hpsi
 
   write(*,'(A)')'===== Complete Making mesh ========================================================'
   return

@@ -43,10 +43,6 @@ subroutine input
   write(*,'(A,2x,I10)')'Nt_iter =',Nt_iter
 
 
-! temporary array
-  allocate(tmp_wfn(0:Nx,0:Nx),tmp_hwfn(0:Nx,0:Nx),tmp_wfn_b(-4:Nx+4,-4:Nx+4))
-  allocate(ztmp_wfn(0:Nx,0:Nx),ztmp_hwfn(0:Nx,0:Nx),ztmp_wfn_b(-4:Nx+4,-4:Nx+4))
-
   write(*,'(A)')
   write(*,'(A)')
   write(*,'(A)')'===== Complete Input parameter ===================================================' 
