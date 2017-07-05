@@ -46,29 +46,80 @@ subroutine dt_evolve_Lanczos(ft)
   allocate(work_lp(lwork),rwork(3*NLanczos-2),w(NLanczos))
   ft = 0d0
 
-  ss = sum(abs(zwfn(:,:))**2)*dx**2; ss = 1d0/sqrt(ss)
-  zwfn = zwfn * ss
-  zwfn_Lanczos(:,:,1) = zwfn(:,:)
+  ss = 0d0
+!$omp parallel do private(ix,iy) reduction(+:ss)
+  do iy = 0,Nx
+     do ix = 0,Nx
+        ss = ss + abs(zwfn(ix,iy))**2
+     end do
+  end do
+  ss = dx**2/sqrt(ss)
+
+!$omp parallel do private(ix,iy)
+  do iy = 0,Nx
+     do ix = 0,Nx
+        zwfn(ix,iy) = zwfn(ix,iy) * ss
+        zwfn_Lanczos(ix,iy,1) = zwfn(ix,iy)
+     end do
+  end do
+
   Hamiltonian_L = 0d0
 
   do j = 1,NLanczos
-    ztmp_wfn(:,:) = zwfn_Lanczos(:,:,j)
+!$omp parallel do private(ix,iy)
+    do iy = 0,Nx
+      do ix = 0,Nx
+        ztmp_wfn(ix,iy) = zwfn_Lanczos(ix,iy,j)
+      end do
+    end do
+
     call zhpsi(ztmp_wfn,ztmp_hwfn,ft)
-    Hamiltonian_L(j,j) = sum(conjg(ztmp_wfn)*ztmp_hwfn)*dx**2
+    ss = 0d0
+!$omp parallel do private(ix,iy) reduction(+:ss)
+    do iy = 0,Nx
+       do ix = 0,Nx
+          ss = ss + conjg(ztmp_wfn(ix,iy))*ztmp_hwfn(ix,iy)
+       end do
+    end do
+
+    Hamiltonian_L(j,j) = ss*dx**2
 
     if(j == NLanczos)exit
     if(j == 1) then
-      ztmp_wfn(:,:) = ztmp_hwfn(:,:) - Hamiltonian_L(j,j)*zwfn_Lanczos(:,:,j)
+!$omp parallel do private(ix,iy) 
+      do iy = 0,Nx
+        do ix = 0,Nx
+          ztmp_wfn(ix,iy) = ztmp_hwfn(ix,iy) - Hamiltonian_L(j,j)*zwfn_Lanczos(ix,iy,j)
+        end do
+      end do
     else
-      ztmp_wfn(:,:) = ztmp_hwfn(:,:) - Hamiltonian_L(j,j)*zwfn_Lanczos(:,:,j)  &
-        & -Hamiltonian_L(j,j-1)*zwfn_Lanczos(:,:,j-1)
+!$omp parallel do private(ix,iy) 
+      do iy = 0,Nx
+        do ix = 0,Nx
+          ztmp_wfn(ix,iy) = ztmp_hwfn(ix,iy) &
+               - Hamiltonian_L(j,j)*zwfn_Lanczos(ix,iy,j)  &
+               & -Hamiltonian_L(j,j-1)*zwfn_Lanczos(ix,iy,j-1)
+        end do
+      end do
     end if
 
-    ss = sqrt(sum(abs(ztmp_wfn(:,:))**2)*dx**2)
+    ss = 0d0
+!$omp parallel do private(ix,iy) reduction(+:ss)
+    do iy = 0,Nx
+       do ix = 0,Nx
+          ss = ss + abs(ztmp_wfn(ix,iy))**2
+       end do
+    end do
+    ss = sqrt(ss*dx**2)
     Hamiltonian_L(j,j+1) = ss
     Hamiltonian_L(j+1,j) = ss
 
-    zwfn_Lanczos(:,:,j+1) = ztmp_wfn(:,:)/ss
+!$omp parallel do private(ix,iy) 
+    do iy = 0,Nx
+       do ix = 0,Nx
+          zwfn_Lanczos(ix,iy,j+1) = ztmp_wfn(ix,iy)/ss
+       end do
+    end do
 
   end do
 
@@ -91,9 +142,20 @@ subroutine dt_evolve_Lanczos(ft)
   end do
   write(*,*)'norm =',sum(abs(zvec_t)**2)
 
-  zwfn = 0d0
+!$omp parallel do private(ix,iy) 
+  do ix = 0,Nx
+     do iy = 0,Nx
+        zwfn(ix,iy) = zvec_t(1)*zwfn_Lanczos(ix,iy,1)
+     end do
+  end do
+
   do j = 1,NLanczos
-    zwfn(:,:) = zwfn(:,:) + zvec_t(j)*zwfn_Lanczos(:,:,j)
+!$omp parallel do private(ix,iy) 
+    do iy = 0,Nx
+      do ix = 0,Nx
+           zwfn(ix,iy) = zwfn(ix,iy) + zvec_t(j)*zwfn_Lanczos(ix,iy,j)
+        end do
+     end do
   end do
 
   return
