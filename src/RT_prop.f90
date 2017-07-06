@@ -18,9 +18,9 @@ subroutine RT_prop
   write(*,'(A)')
   write(*,'(A)')
 
-  call dipole_norm(dipole,norm)
-  dipole_t(0) = dipole
-  norm_t(0) = norm
+!  call dipole_norm(dipole,norm)
+!  dipole_t(0) = dipole
+!  norm_t(0) = norm
 
 
   it = 0
@@ -43,9 +43,9 @@ subroutine RT_prop
      ft = 0d0
 !     call dt_evolve(ft)
      call dt_evolve_Lanczos(ft)
-     call dipole_norm(dipole,norm)
-     dipole_t(it) = dipole
-     norm_t(it) = norm
+!     call dipole_norm(dipole,norm)
+!     dipole_t(it) = dipole
+!     norm_t(it) = norm
 
      if (mod(it,100) == 0 .or. it == 1)then
 !     if (1 == 0)then
