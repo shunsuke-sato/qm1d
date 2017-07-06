@@ -15,10 +15,10 @@ subroutine dt_evolve(ft)
   ztmp_wfn(:,:) = zwfn(:,:)
   zs = 1d0
   do iexp = 1,4
-     zs = zs*(-zI*dt)/dble(iexp)
-     call zhpsi(ztmp_wfn,ztmp_hwfn,ft)
-     zwfn(:,:) = zwfn(:,:) + zs*ztmp_hwfn(:,:)
-     ztmp_wfn(:,:) = ztmp_hwfn(:,:)
+    zs = zs*(-zI*dt)/dble(iexp)
+    call zhpsi(ztmp_wfn,ztmp_hwfn,ft)
+    zwfn(:,:) = zwfn(:,:) + zs*ztmp_hwfn(:,:)
+    ztmp_wfn(:,:) = ztmp_hwfn(:,:)
   end do
   return
 end subroutine dt_evolve
@@ -36,8 +36,8 @@ subroutine dt_evolve_Lanczos(ft)
   real(dp) :: ss
 !LAPACK
   integer :: lwork
-  complex(8),allocatable :: work_lp(:)
-  real(8),allocatable :: rwork(:),w(:)
+  complex(zp),allocatable :: work_lp(:)
+  real(dp),allocatable :: rwork(:),w(:)
   integer :: info
   integer :: ix,iy
   complex(zp) :: ztmp_wfn(0:Nx,0:Nx),ztmp_hwfn(0:Nx,0:Nx)
@@ -66,20 +66,15 @@ subroutine dt_evolve_Lanczos(ft)
   Hamiltonian_L = 0d0
 
   do j = 1,NLanczos
-!$omp parallel do private(ix,iy)
-    do iy = 0,Nx
-      do ix = 0,Nx
-        ztmp_wfn(ix,iy) = zwfn_Lanczos(ix,iy,j)
-      end do
-    end do
 
-    call zhpsi(ztmp_wfn,ztmp_hwfn,ft)
+    call zhpsi(zwfn_Lanczos(:,:,j),ztmp_hwfn,ft)
     ss = 0d0
 !$omp parallel do private(ix,iy) reduction(+:ss)
     do iy = 0,Nx
-       do ix = 0,Nx
-          ss = ss + conjg(ztmp_wfn(ix,iy))*ztmp_hwfn(ix,iy)
-       end do
+      do ix = 0,Nx
+!          ss = ss + conjg(ztmp_wfn(ix,iy))*ztmp_hwfn(ix,iy)
+        ss = ss + conjg(zwfn_Lanczos(ix,iy,j))*ztmp_hwfn(ix,iy)
+      end do
     end do
 
     Hamiltonian_L(j,j) = ss*dx**2
@@ -114,10 +109,11 @@ subroutine dt_evolve_Lanczos(ft)
     Hamiltonian_L(j,j+1) = ss
     Hamiltonian_L(j+1,j) = ss
 
+    ss = 1d0/ss
 !$omp parallel do private(ix,iy) 
     do iy = 0,Nx
        do ix = 0,Nx
-          zwfn_Lanczos(ix,iy,j+1) = ztmp_wfn(ix,iy)/ss
+          zwfn_Lanczos(ix,iy,j+1) = ztmp_wfn(ix,iy)*ss
        end do
     end do
 
@@ -140,23 +136,75 @@ subroutine dt_evolve_Lanczos(ft)
   do j = 1,NLanczos
     zvec_t(j) = sum(Hamiltonian_L(j,:)*zvec(:))
   end do
-  write(*,*)'norm =',sum(abs(zvec_t)**2)
 
-!$omp parallel do private(ix,iy) 
-  do ix = 0,Nx
-     do iy = 0,Nx
-        zwfn(ix,iy) = zvec_t(1)*zwfn_Lanczos(ix,iy,1)
-     end do
-  end do
 
-  do j = 1,NLanczos
+  call Lanczos_sum
+
+
+contains
+  subroutine Lanczos_sum
+    implicit none
+
+    select case(NLanczos)
+    case(3)
 !$omp parallel do private(ix,iy) 
-    do iy = 0,Nx
-      do ix = 0,Nx
-           zwfn(ix,iy) = zwfn(ix,iy) + zvec_t(j)*zwfn_Lanczos(ix,iy,j)
+      do iy = 0,Nx
+        do ix = 0,Nx
+          zwfn(ix,iy) = zvec_t(1)*zwfn_Lanczos(ix,iy,1) &
+                       +zvec_t(2)*zwfn_Lanczos(ix,iy,2) &
+                       +zvec_t(3)*zwfn_Lanczos(ix,iy,3)
         end do
-     end do
-  end do
+      end do
+    case(4)
+!$omp parallel do private(ix,iy) 
+      do iy = 0,Nx
+        do ix = 0,Nx
+          zwfn(ix,iy) = zvec_t(1)*zwfn_Lanczos(ix,iy,1) &
+                       +zvec_t(2)*zwfn_Lanczos(ix,iy,2) &
+                       +zvec_t(3)*zwfn_Lanczos(ix,iy,3) &
+                       +zvec_t(4)*zwfn_Lanczos(ix,iy,4)
+        end do
+      end do
+    case(5)
+!$omp parallel do private(ix,iy) 
+      do iy = 0,Nx
+        do ix = 0,Nx
+          zwfn(ix,iy) = zvec_t(1)*zwfn_Lanczos(ix,iy,1) &
+                       +zvec_t(2)*zwfn_Lanczos(ix,iy,2) &
+                       +zvec_t(3)*zwfn_Lanczos(ix,iy,3) &
+                       +zvec_t(4)*zwfn_Lanczos(ix,iy,4) &
+                       +zvec_t(5)*zwfn_Lanczos(ix,iy,5)
+        end do
+      end do
+    case(6)
+!$omp parallel do private(ix,iy) 
+      do iy = 0,Nx
+        do ix = 0,Nx
+          zwfn(ix,iy) = zvec_t(1)*zwfn_Lanczos(ix,iy,1) &
+                       +zvec_t(2)*zwfn_Lanczos(ix,iy,2) &
+                       +zvec_t(3)*zwfn_Lanczos(ix,iy,3) &
+                       +zvec_t(4)*zwfn_Lanczos(ix,iy,4) &
+                       +zvec_t(5)*zwfn_Lanczos(ix,iy,5) &
+                       +zvec_t(6)*zwfn_Lanczos(ix,iy,6)
+        end do
+      end do
+    case default
+!$omp parallel do private(ix,iy) 
+      do iy = 0,Nx
+        do ix = 0,Nx
+          zwfn(ix,iy) = zvec_t(1)*zwfn_Lanczos(ix,iy,1)
+        end do
+      end do
 
-  return
+      do j = 2,NLanczos
+!$omp parallel do private(ix,iy) 
+        do iy = 0,Nx
+          do ix = 0,Nx
+            zwfn(ix,iy) = zwfn(ix,iy) + zvec_t(j)*zwfn_Lanczos(ix,iy,j)
+          end do
+        end do
+      end do
+    end select
+  end subroutine Lanczos_sum
+
 end subroutine dt_evolve_Lanczos
