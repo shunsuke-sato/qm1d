@@ -5,10 +5,14 @@
 !---------------------------------------------------!
 subroutine RT_prop
   use global_variables
+  use timer
   implicit none
   real(dp) :: ft,dipole,norm
   integer :: it,ix
   character(50) :: citer
+  real(8) :: time_ini,time_end,time_elapse
+
+  call elapse_time(time_ini)
 
   write(*,'(A)')'===== Real time propagation ======================================================'
   write(*,'(A)')
@@ -24,6 +28,13 @@ subroutine RT_prop
   call zwfn_jx
 
   write(citer,'(I7.7)')it
+  open(22,file='rho_'//trim(citer)//'.out')
+  do ix = 0,Nx
+    write(22,'(999e26.16e3)')xn(ix),rho(ix),jx(ix)
+  end do
+  close(22)
+
+  write(citer,'(I7.7)')it
 
   do it = 1, Nt_iter
 !     if(mod(it, 1000) == 0)write(*,"(A,2x,I0)")"iter =",it
@@ -36,12 +47,11 @@ subroutine RT_prop
      dipole_t(it) = dipole
      norm_t(it) = norm
 
-     call zwfn_rho
-     call zwfn_jx
-       
-
-     if (mod(it,10) == 0 .or. it == 1)then
+     if (mod(it,100) == 0 .or. it == 1)then
 !     if (1 == 0)then
+
+       call zwfn_rho
+       call zwfn_jx
 
        write(citer,'(I7.7)')it
        open(22,file='rho_'//trim(citer)//'.out')
@@ -50,10 +60,6 @@ subroutine RT_prop
        end do
        close(22)
 
-
-       call zwfn_rho
-       call zwfn_jx
-
      end if
   end do
 
@@ -61,6 +67,9 @@ subroutine RT_prop
   write(*,'(A)')
   write(*,'(A)')'===== complete Real time propagation ============================================'
 
+  call elapse_time(time_end)
+  time_elapse = time_end - time_ini
+  write(*,"(A,2x,e16.6e3,A)")'Elapse time for RT_prop',time_elapse,"[sec]"
   
-  return
+
 end subroutine RT_prop

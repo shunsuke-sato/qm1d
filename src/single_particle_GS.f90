@@ -5,6 +5,7 @@
 !---------------------------------------------------!
 subroutine single_particle_GS
   use global_variables
+  use timer
   implicit none
   integer,parameter :: Ncg_t = 500
 ! CG
@@ -17,6 +18,9 @@ subroutine single_particle_GS
   integer :: ix, icg
   real(dp) :: rnd
 
+  real(8) :: time_ini,time_end,time_elapse
+
+  call elapse_time(time_ini)
 
   allocate (wfn_sp(0:Nx))
   allocate( xvec(0:Nx),pvec(0:Nx),rvec(0:Nx) )
@@ -80,5 +84,8 @@ subroutine single_particle_GS
   xx=sum(xvec(:)**2)*dx
   wfn_sp(:) = xvec(:)/sqrt(xx)
 
-  return
+  call elapse_time(time_end)
+  time_elapse = time_end - time_ini
+  write(*,"(A,2x,e16.6e3,A)")'Elapse time for single_particle_GS',time_elapse,"[sec]"
+
 end subroutine single_particle_GS

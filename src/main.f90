@@ -4,10 +4,12 @@
 ! https://opensource.org/licenses/mit-license.php   !
 !---------------------------------------------------!
 program main
-use global_variables
+  use global_variables
+  use timer
   implicit none
 
   write(*,'(A)')'Start qm1d'
+  call init_timer
   call input
   call mesh
 
