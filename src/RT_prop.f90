@@ -15,7 +15,6 @@ subroutine RT_prop
   real(8) :: occ_nat(Nx+1)
 
   call elapse_time(time_ini)
-  call initialize_density_matrix
 
   write(*,'(A)')'===== Real time propagation ======================================================'
   write(*,'(A)')
