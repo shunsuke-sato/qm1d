@@ -53,7 +53,8 @@ subroutine dt_evolve_Lanczos(ft)
         ss = ss + abs(zwfn(ix,iy))**2
      end do
   end do
-  ss = dx**2/sqrt(ss)
+  ss = dx**2*ss
+  ss = 1d0/sqrt(ss)
 
 !$omp parallel do private(ix,iy)
   do iy = 0,Nx
