@@ -14,7 +14,8 @@ module hpsi
 
   public :: initialize_hpsi &
            ,rhpsi &
-           ,zhpsi
+           ,zhpsi &
+           ,zhpsi0
   
 contains
 !-----------------------------------------------------------------------------------------
@@ -111,6 +112,50 @@ contains
     
     return
   end subroutine zhpsi
+!-----------------------------------------------------------------------------------------
+  !-----------------------------------------------------------------------------------------
+  subroutine zhpsi0(ztmp_wfn,ztmp_hwfn,ft)
+    implicit none
+    complex(zp),intent(in) :: ztmp_wfn(0:Nx,0:Nx)
+    complex(zp),intent(out) :: ztmp_hwfn(0:Nx,0:Nx)
+    real(dp),intent(in) :: ft
+    integer :: ix,iy
+    real(dp) :: c0,c1,c2,c3,c4
+
+! nine-points formula  
+    c0=-0.5d0*cN0/(dx**2)
+    c1=-0.5d0*cN1/(dx**2)
+    c2=-0.5d0*cN2/(dx**2)
+    c3=-0.5d0*cN3/(dx**2)
+    c4=-0.5d0*cN4/(dx**2)
+
+!$omp parallel do private(ix,iy)    
+    do iy = 0,Nx
+      do ix = 0,Nx
+        ztmp_wfn_b(ix,iy) = ztmp_wfn(ix,iy)
+      end do
+    end do
+
+!$omp parallel do private(ix,iy)    
+    do iy=0,Nx
+      do ix=0,Nx
+        ztmp_hwfn(ix,iy)=2d0*c0*ztmp_wfn_b(ix,iy) &
+          + c1*(ztmp_wfn_b(ix+1,iy) + ztmp_wfn_b(ix-1,iy) + ztmp_wfn_b(ix,iy+1) + ztmp_wfn_b(ix,iy-1)) &
+          + c2*(ztmp_wfn_b(ix+2,iy) + ztmp_wfn_b(ix-2,iy) + ztmp_wfn_b(ix,iy+2) + ztmp_wfn_b(ix,iy-2)) &
+          + c3*(ztmp_wfn_b(ix+3,iy) + ztmp_wfn_b(ix-3,iy) + ztmp_wfn_b(ix,iy+3) + ztmp_wfn_b(ix,iy-3)) &
+          + c4*(ztmp_wfn_b(ix+4,iy) + ztmp_wfn_b(ix-4,iy) + ztmp_wfn_b(ix,iy+4) + ztmp_wfn_b(ix,iy-4)) 
+      end do
+    end do
+    
+!$omp parallel do private(ix,iy)
+    do iy = 0,Nx
+      do ix = 0,Nx
+        ztmp_hwfn(ix,iy) = ztmp_hwfn(ix,iy) + (ft*xyn(ix,iy))*ztmp_wfn(ix,iy)
+      end do
+    end do
+    
+    return
+  end subroutine zhpsi0
 !-----------------------------------------------------------------------------------------
 
 end module hpsi
