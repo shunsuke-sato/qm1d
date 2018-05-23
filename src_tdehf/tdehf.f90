@@ -72,8 +72,8 @@ subroutine input
   Nt_im = 30000
   dt_im = 0.001d0
 ! TD
-  T_calc = 200d0
-  dt = 0.005d0
+  T_calc = 400d0
+  dt = 0.01d0
   Nt_iter = aint(T_calc/dt)+1
 
 
