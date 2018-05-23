@@ -2,39 +2,39 @@ module global_variables
 
 ! parameter
   integer,parameter :: dp = kind(0d0), zp = kind((1d0,1d0))
-  complex(zp),parameter :: zI = (0d0,1d0)
-  real(dp),parameter :: pi=3.14159265359d0
+  complex(8),parameter :: zI = (0d0,1d0)
+  real(8),parameter :: pi=3.14159265359d0
 
 ! mesh
   integer :: Nx
-  real(dp) :: length_x,dx
-  real(dp),allocatable :: xn(:)
+  real(8) :: length_x,dx
+  real(8),allocatable :: xn(:)
 
 ! TD/GS: wave-function, density, potential and so on
   integer :: Nt_im
-  real(dp) :: dt_im
-  real(dp),allocatable :: rho(:), v_ext(:), v_int(:)
-  complex(zp),allocatable :: zwfn(:,:), zw_mat(:,:,:), zSmat(:,:), zAmat(:,:)
+  real(8) :: dt_im
+  real(8),allocatable :: rho(:), v_ext(:), v_int(:)
+  complex(8),allocatable :: zwfn(:,:), zw_mat(:,:,:), zSmat(:,:), zAmat(:,:)
 
   character(4) :: RT_mode
   integer :: Nt_iter
-  real(dp) :: T_calc,dt,kick_mom
-  real(dp),allocatable :: dipole_t(:),norm_t(:)
-  real(dp) :: field_max,field_duration,field_omega
-  real(dp) :: field_max_eV_per_AA,field_duration_fs,field_omega_eV
-  real(dp),allocatable :: field_t(:)
+  real(8) :: T_calc,dt,kick_mom
+  real(8),allocatable :: dipole_t(:),norm_t(:)
+  real(8) :: field_max,field_duration,field_omega
+  real(8) :: field_max_eV_per_AA,field_duration_fs,field_omega_eV
+  real(8),allocatable :: field_t(:)
 
 ! collision
-  real(dp) :: Ekin0, x0_col, delta_x_col
-  real(dp) :: V0_delta ! V(x) = V0_delta*delta(x-x')
+  real(8) :: Ekin0, x0_col, delta_x_col
+  real(8) :: V0_delta ! V(x) = V0_delta*delta(x-x')
 
 ! temporary
-  complex(zp),allocatable :: ztmp_wfn(:,:),ztmp_hwfn(:,:),ztmp_swfn(:,:),ztmp_wfn_b(:,:)
+  complex(8),allocatable :: ztmp_wfn(:,:),ztmp_hwfn(:,:),ztmp_swfn(:,:),ztmp_wfn_b(:,:)
 
 ! single-particle problem
-  real(dp),allocatable :: wfn_sp(:)
+  real(8),allocatable :: wfn_sp(:)
 
-  real(dp),parameter :: V0 = -0.73485720d0, sigma_V = 1.56906200d0
+  real(8),parameter :: V0 = -0.73485720d0, sigma_V = 1.56906200d0
 
 end module global_variables
 !=======10========20========30========40========50========60========70========80========90=======100
@@ -72,8 +72,8 @@ subroutine input
   Nt_im = 30000
   dt_im = 0.001d0
 ! TD
-  T_calc = 400d0
-  dt = 0.01d0
+  T_calc = 200d0
+  dt = 0.005d0
   Nt_iter = aint(T_calc/dt)+1
 
 
@@ -136,7 +136,7 @@ subroutine preparation_GS
   use global_variables
   implicit none
   integer :: ix,iy
-  real(dp) :: tmp,r
+  real(8) :: tmp,r
 
 
   write(*,'(A)')'===== preparatin_GS =============================================================='
@@ -221,7 +221,7 @@ subroutine calc_zw_mat
   use global_variables
   implicit none
   integer :: ix,iy,ixy,i,j
-  complex(zp) :: ztmp
+  complex(8) :: ztmp
 
 ! (1,1)
   do ix = 0,Nx
@@ -268,10 +268,10 @@ end subroutine Calc_zw_mat
 subroutine zhpsi_pre
   use global_variables
   implicit none
-  real(dp) :: sigma
-  complex(zp) :: zw_ijkl(2,2,2,2)
+  real(8) :: sigma
+  complex(8) :: zw_ijkl(2,2,2,2)
   integer :: i,j,k,l
-  complex(zp) :: zt1,zt2
+  complex(8) :: zt1,zt2
 
 ! Normalize
   zSmat(1,1) = sum(abs(zwfn(:,1))**2)*dx
@@ -318,14 +318,14 @@ subroutine zhpsi(ft)
   use global_variables
   implicit none
 ! finite difference
-  real(dp),parameter :: cN0=-205d0/72d0,cN1=8d0/5d0
-  real(dp),parameter :: cN2=-1d0/5d0,cN3=8d0/315d0
-  real(dp),parameter :: cN4=-1d0/560d0    
-  real(dp) :: ft
+  real(8),parameter :: cN0=-205d0/72d0,cN1=8d0/5d0
+  real(8),parameter :: cN2=-1d0/5d0,cN3=8d0/315d0
+  real(8),parameter :: cN4=-1d0/560d0    
+  real(8) :: ft
   integer :: ix,iy
-  real(dp) :: c0,c1,c2,c3,c4
-  real(dp) :: sigma
-  complex(zp) :: zSmat_i(2,2)
+  real(8) :: c0,c1,c2,c3,c4
+  real(8) :: sigma
+  complex(8) :: zSmat_i(2,2)
   integer :: n
 ! nine-points formula  
   c0=-0.5d0*cN0/(dx**2)
@@ -373,8 +373,8 @@ subroutine Ima_time_prop
   use global_variables
   implicit none
   integer :: it,ix
-  real(dp) :: esp,esp_res,diff_rho,Etot,ft,tmp
-  real(dp),allocatable :: rho_old(:)
+  real(8) :: esp,esp_res,diff_rho,Etot,ft,tmp
+  real(8),allocatable :: rho_old(:)
   
   write(*,'(A)')'===== Ground state calculation ===================================================='
   write(*,'(A)')
@@ -437,17 +437,17 @@ end subroutine IMA_TIME_PROP
 subroutine Total_Energy(Etot,ft)
   use global_variables
   implicit none
-  real(dp) :: Etot,ft
-  complex(zp) :: zHmat(2,2)
+  real(8) :: Etot,ft
+  complex(8) :: zHmat(2,2)
 
 ! finite difference
-  real(dp),parameter :: cN0=-205d0/72d0,cN1=8d0/5d0
-  real(dp),parameter :: cN2=-1d0/5d0,cN3=8d0/315d0
-  real(dp),parameter :: cN4=-1d0/560d0    
+  real(8),parameter :: cN0=-205d0/72d0,cN1=8d0/5d0
+  real(8),parameter :: cN2=-1d0/5d0,cN3=8d0/315d0
+  real(8),parameter :: cN4=-1d0/560d0    
   integer :: ix,iy,n
-  real(dp) :: c0,c1,c2,c3,c4
-  real(dp) :: sigma
-  complex(zp) :: zSmat_i(2,2)
+  real(8) :: c0,c1,c2,c3,c4
+  real(8) :: sigma
+  complex(8) :: zSmat_i(2,2)
 ! nine-points formula  
   c0=-0.5d0*cN0/(dx**2)
   c1=-0.5d0*cN1/(dx**2)
@@ -491,11 +491,11 @@ end subroutine Total_Energy
 subroutine pair_distribution_GS
   use global_variables
   implicit none 
-  real(dp),parameter :: length_limit_pair = 20d0
+  real(8),parameter :: length_limit_pair = 20d0
   integer :: Nlength_limit_pair,N0
-  real(dp),allocatable :: Pair_dist(:,:)
+  real(8),allocatable :: Pair_dist(:,:)
   integer :: ix,iy,ir
-  complex(zp),allocatable :: zwfn_2d(:,:)
+  complex(8),allocatable :: zwfn_2d(:,:)
 
   Nlength_limit_pair = aint(length_limit_pair /dx)+1
   allocate(Pair_dist(0:Nx,0:4))
@@ -576,17 +576,17 @@ end subroutine pair_distribution_GS
 subroutine single_particle_GS
   use global_variables
   implicit none
-  integer,parameter :: Ncg = 2000
-  real(8),parameter :: epsilon_res = 1d-8
+  integer,parameter :: Ncg = 500
+  real(8),parameter :: epsilon_res = 1d-6
 ! CG
-  real(dp),allocatable :: xvec(:),pvec(:),rvec(:)
-  real(dp),allocatable :: hxvec(:),gvec(:),hpvec(:)
+  real(8),allocatable :: xvec(:),pvec(:),rvec(:)
+  real(8),allocatable :: hxvec(:),gvec(:),hpvec(:)
 
-  real(dp) :: xx,pp,xp,xhx,php,xhp,esp,esp_res,gg,gg0
-  real(dp) :: ss,lambda,alpha,beta,aa,bb,cc,res
+  real(8) :: xx,pp,xp,xhx,php,xhp,esp,esp_res,gg,gg0
+  real(8) :: ss,lambda,alpha,beta,aa,bb,cc,res
 
   integer :: ix, icg
-  real(dp) :: rnd
+  real(8) :: rnd
 
 
   allocate (wfn_sp(0:Nx))
@@ -644,7 +644,7 @@ subroutine single_particle_GS
     xx=sum(xvec(:)**2)*dx
     xhx=sum(xvec(:)*hxvec(:))*dx
     lambda=xhx/xx
-    res = sum((hxvec(:)-lambda*xvec(:))**2)*dx
+    res = sum((hxvec(:)-lambda*xvec(:))**2)*dx/xx
     write(*,'(I7,2x,2e26.16e3)')icg-1,lambda,res
     if(res < epsilon_res)exit
   end do
@@ -659,12 +659,12 @@ end subroutine single_particle_GS
 subroutine hpsi_sp(u,hu,v)
   use global_variables
   implicit none
-  real(dp) :: u(0:Nx),hu(0:Nx),tu(0-4:Nx+4),v(0:Nx)
+  real(8) :: u(0:Nx),hu(0:Nx),tu(0-4:Nx+4),v(0:Nx)
 ! finite difference
-  real(dp),parameter :: cN0=-205d0/72d0,cN1=8d0/5d0
-  real(dp),parameter :: cN2=-1d0/5d0,cN3=8d0/315d0
-  real(dp),parameter :: cN4=-1d0/560d0    
-  real(dp) :: c0,c1,c2,c3,c4
+  real(8),parameter :: cN0=-205d0/72d0,cN1=8d0/5d0
+  real(8),parameter :: cN2=-1d0/5d0,cN3=8d0/315d0
+  real(8),parameter :: cN4=-1d0/560d0    
+  real(8) :: c0,c1,c2,c3,c4
   integer :: ix
 
   c0=-0.5d0*cN0/(dx**2)
@@ -691,7 +691,7 @@ subroutine preparation_RT_collision
   use global_variables
   implicit none
   integer :: ix
-  real(dp) :: k_mom, tmp
+  real(8) :: k_mom, tmp
 
   k_mom = sqrt(2d0*Ekin0)
   write(*,*)'k_mom =',k_mom
@@ -729,11 +729,11 @@ subroutine RT_prop
   use global_variables
   implicit none
   integer :: it,iexp, ix
-  real(dp) :: ft, Etot,P_impact_excitation(0:2)
-  complex(zp) :: zcoef
+  real(8) :: ft, Etot,P_impact_excitation(0:2)
+  complex(8) :: zcoef
   character(50) :: citer
 ! work (pred-corr)  
-  complex(zp),allocatable :: zwfn_pre_cor(:,:)
+  complex(8),allocatable :: zwfn_pre_cor(:,:)
 
   allocate( zwfn_pre_cor(0:Nx,2))
 
@@ -838,8 +838,8 @@ end subroutine RT_prop
 subroutine update_v_ext
   use global_variables
   implicit none
-  real(dp),parameter :: V0_pair =0d0
-  real(dp) :: rho_pair(0:Nx)
+  real(8),parameter :: V0_pair =0d0
+  real(8) :: rho_pair(0:Nx)
   integer :: ix
 
   do ix = 0,Nx
@@ -847,8 +847,9 @@ subroutine update_v_ext
   end do
 
   do ix=0,Nx
-     v_ext(ix) = V0*exp(-0.5d0*(xn(ix)/sigma_V)**2)
-!     v_ext(ix) = -1d0/sqrt(1d0+xn(ix)**2) + V0_pair * rho_pair(ix)
+!     v_ext(ix) = V0*exp(-0.5d0*(xn(ix)/sigma_V)**2)
+     v_ext(ix) = -1d0/sqrt(1d0+xn(ix)**2) + V0_pair * rho_pair(ix)
+     v_ext(ix) = -1d0/sqrt(2d0+xn(ix)**2)
   end do
   
   return
@@ -857,8 +858,8 @@ end subroutine update_v_ext
 subroutine impact_ionization(P_impact_excitation)
   use global_variables
   implicit none
-  real(dp) :: P_impact_excitation(0:2)
-  complex(zp) :: zv_t0(0:Nx),zv_t(0:Nx),zc_t(0:2)
+  real(8) :: P_impact_excitation(0:2)
+  complex(8) :: zv_t0(0:Nx),zv_t(0:Nx),zc_t(0:2)
   integer :: ix,iy
 
   do ix = 0,Nx
