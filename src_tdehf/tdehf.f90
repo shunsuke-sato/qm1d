@@ -871,7 +871,7 @@ subroutine impact_ionization(P_impact_excitation)
 
   P_impact_excitation(0) = abs(zc_t(0))**2
   P_impact_excitation(1) = abs(zc_t(1))**2
-  P_impact_excitation(2) =   1d0 - ( P_impact_excitation(1) + P_impact_excitation(9) )
+  P_impact_excitation(2) =   1d0 - ( P_impact_excitation(1) + P_impact_excitation(0) )
 
   return
 end subroutine impact_ionization
