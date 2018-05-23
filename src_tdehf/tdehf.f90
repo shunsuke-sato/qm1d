@@ -577,12 +577,13 @@ subroutine single_particle_GS
   use global_variables
   implicit none
   integer,parameter :: Ncg = 2000
+  real(8),parameter :: epsilon_res = 1d-8
 ! CG
   real(dp),allocatable :: xvec(:),pvec(:),rvec(:)
   real(dp),allocatable :: hxvec(:),gvec(:),hpvec(:)
 
   real(dp) :: xx,pp,xp,xhx,php,xhp,esp,esp_res,gg,gg0
-  real(dp) :: ss,lambda,alpha,beta,aa,bb,cc
+  real(dp) :: ss,lambda,alpha,beta,aa,bb,cc,res
 
   integer :: ix, icg
   real(dp) :: rnd
@@ -643,8 +644,9 @@ subroutine single_particle_GS
     xx=sum(xvec(:)**2)*dx
     xhx=sum(xvec(:)*hxvec(:))*dx
     lambda=xhx/xx
-
-    write(*,'(I7,2x,2e26.16e3)')icg-1,lambda,sum((hxvec(:)-lambda*xvec(:))**2)*dx
+    res = sum((hxvec(:)-lambda*xvec(:))**2)*dx
+    write(*,'(I7,2x,2e26.16e3)')icg-1,lambda,res
+    if(res < epsilon_res)exit
   end do
 
 
