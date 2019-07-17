@@ -83,6 +83,11 @@ subroutine GS_CG
   write(*,'(A)')'esp + ion-ion, r_dist'
   write(*,'(e16.6e3,3x,e16.6e3)')esp+1d0/sqrt(sigma0**2+r_dist**2),r_dist
 
+  call wfn_rho
+  write(*,'(A)')'force tot, force elec-ion'
+  write(*,'(e16.6e3,3x,e16.6e3)')sum(force_field*rho)*dx&
+       +r_dist/sqrt(sigma0**2+r_dist**2)**3,sum(force_field*rho)*dx
+
   ss = 0d0
   do iy =0,Nx
   do ix =0,Nx

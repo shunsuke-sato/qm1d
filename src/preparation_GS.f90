@@ -16,6 +16,7 @@ subroutine preparation_GS
 
   allocate(wfn(0:Nx,0:Nx), v_ext(0:Nx), v_int(0:Nx,0:Nx), v_all(0:Nx,0:Nx))
   allocate(rho(0:Nx), jx(0:Nx))
+  allocate(force_field(0:Nx))
 
   write(*,'(A)')'=== preparing initial wave-function ===='
 ! wfn(0,:) == wfn(Nx,:) == 0 
@@ -51,6 +52,9 @@ subroutine preparation_GS
 !     v_ext(ix) = -1d0/sqrt(sigma0**2+xn(ix)**2)
      v_ext(ix) = -1d0/sqrt(sigma0**2+(xn(ix)-0.5d0*r_dist)**2) &
                  -1d0/sqrt(sigma0**2+(xn(ix)+0.5d0*r_dist)**2)
+     force_field(ix) = &
+      -0.5d0*(r_dist/2d0-xn(ix))/sqrt(sigma0**2+(xn(ix)-0.5d0*r_dist)**2)**3 &
+      -0.5d0*(r_dist/2d0+xn(ix))/sqrt(sigma0**2+(xn(ix)+0.5d0*r_dist)**2)**3
   end do
 !  v_KS_tdehf_old = v_ext
 !  v_KS_tdehf = v_ext

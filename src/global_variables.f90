@@ -30,6 +30,7 @@ module global_variables
 ! GS: wave-function, density, potential and so on
   integer :: Ncg
   real(dp),allocatable :: wfn(:,:), rho(:), v_ext(:), v_int(:,:), v_all(:,:)
+  real(dp),allocatable :: force_field(:)
   real(dp),allocatable :: jx(:)
 
 ! TD
