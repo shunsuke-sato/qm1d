@@ -1,9 +1,9 @@
-FC = gfortran -O2 -fopenmp ## gfotran
+#FC = gfortran -O2 -fopenmp ## gfotran
 #FC = gfortran -O0 -fbounds-check ## gfotran debug
-#FC = ifort -O3 -xHOST -ipo -ip ## intel
+FC = ifort -O3 -xHOST -ipo -ip ## intel
 
-LN = -llapack -lblas
-#LN = -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_core.a ${MKLROOT}/lib/intel64/libmkl_sequential.a -Wl,--end-group -lpthread -lm
+#LN = -llapack -lblas
+LN = -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_core.a ${MKLROOT}/lib/intel64/libmkl_sequential.a -Wl,--end-group -lpthread -lm
 
 VPATH = src:object
 SRC = $(shell cd src ;ls *.f90 ;cd ..)
