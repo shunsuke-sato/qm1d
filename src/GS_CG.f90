@@ -80,6 +80,8 @@ subroutine GS_CG
 
   write(*,'(A)')'esp,     esp_res'
   write(*,'(e16.6e3,3x,e16.6e3)')esp,esp_res
+  write(*,'(A)')'esp + ion-ion, r_dist'
+  write(*,'(e16.6e3,3x,e16.6e3)')esp+1d0/sqrt(sigma0**2+r_dist**2),r_dist
 
   ss = 0d0
   do iy =0,Nx

@@ -14,15 +14,15 @@ program main
   call mesh
 
   call preparation_GS
-!  call GS_CG
+  call GS_CG
 
-  call single_particle_GS
+!  call single_particle_GS
 !  call IMA_TIME_PROP
-  write(*,*)'End single_particle_GS'
+!  write(*,*)'End single_particle_GS'
 
-  call preparation_RT_collision
-!  stop
-!  call preparation_RT
+!  call preparation_RT_collision
+  stop
+  call preparation_RT
   call RT_prop
 
   call write_results

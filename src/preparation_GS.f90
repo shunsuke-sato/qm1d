@@ -49,7 +49,9 @@ subroutine preparation_GS
 !     v_ext(ix) = 0.5d0*xn(ix)**2
 !     v_ext(ix) = -2d0/sqrt(1d0+xn(ix)**2)
 !     v_ext(ix) = -1d0/sqrt(1d0+xn(ix)**2)
-     v_ext(ix) = -1d0/sqrt(sigma0**2+xn(ix)**2)
+!     v_ext(ix) = -1d0/sqrt(sigma0**2+xn(ix)**2)
+     v_ext(ix) = -1d0/sqrt(sigma0**2+(xn(ix)-0.5d0*r_dist)**2) &
+                 -1d0/sqrt(sigma0**2+(xn(ix)+0.5d0*r_dist)**2)
   end do
 !  v_KS_tdehf_old = v_ext
 !  v_KS_tdehf = v_ext

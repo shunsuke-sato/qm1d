@@ -48,6 +48,9 @@ module global_variables
 ! collision
   real(dp) :: Ekin0, x0_col, delta_x_col
 
+! H2
+  real(dp),parameter :: r_dist = 2d0
+
 ! single-particle problem
   real(dp),allocatable :: wfn_sp(:)
 

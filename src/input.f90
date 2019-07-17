@@ -11,8 +11,8 @@ subroutine input
   write(*,'(A)')'===== Input parameter ============================================================='
   write(*,'(A)')
 
-  Nx = 2000
-  length_x = 400d0
+  Nx = 300
+  length_x = 30d0
 ! GS
   Ncg = 800
 ! TD
