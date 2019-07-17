@@ -49,6 +49,7 @@ module global_variables
   real(dp) :: Ekin0, x0_col, delta_x_col
 
 ! H2
+  real(dp),parameter :: sigma0 = sqrt(2d0)
   real(dp),parameter :: r_dist = 2d0
 
 ! single-particle problem

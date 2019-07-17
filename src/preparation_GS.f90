@@ -6,7 +6,6 @@
 subroutine preparation_GS
   use global_variables
   implicit none
-  real(dp),parameter :: sigma0 = sqrt(2d0)
   integer :: ix,iy
   real(dp) :: tmp,r
   real(dp) :: tmp_wfn(0:Nx,0:Nx)
