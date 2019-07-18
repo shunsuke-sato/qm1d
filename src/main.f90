@@ -21,7 +21,8 @@ program main
 !  write(*,*)'End single_particle_GS'
 
 !  call preparation_RT_collision
-  stop
+!  stop
+
   call preparation_RT
   call RT_prop
 

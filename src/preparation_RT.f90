@@ -14,7 +14,7 @@ subroutine preparation_RT
   write(*,'(A)')
   allocate(zwfn(0:Nx,0:Nx))
   allocate(field_t(0:Nt_iter+1))
-  allocate(dipole_t(0:Nt_iter),norm_t(0:Nt_iter))
+  allocate(dipole_t(0:Nt_iter),norm_t(0:Nt_iter),force_t(0:Nt_iter))
   select case(RT_mode)
      case('kick')
         do iy=0,Nx

@@ -38,7 +38,7 @@ module global_variables
   integer :: Nt_iter
   real(dp) :: T_calc,dt,kick_mom
   complex(zp),allocatable :: zwfn(:,:)
-  real(dp),allocatable :: dipole_t(:),norm_t(:)
+  real(dp),allocatable :: dipole_t(:),norm_t(:),force_t(:)
   real(dp) :: field_max,field_duration,field_omega
   real(dp) :: field_max_eV_per_AA,field_duration_fs,field_omega_eV
   real(dp),allocatable :: field_t(:)
@@ -51,7 +51,7 @@ module global_variables
 
 ! H2
   real(dp),parameter :: sigma0 = sqrt(2d0)
-  real(dp),parameter :: r_dist = 2d0
+  real(dp),parameter :: r_dist = 2.0d0
 
 ! single-particle problem
   real(dp),allocatable :: wfn_sp(:)

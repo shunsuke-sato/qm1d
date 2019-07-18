@@ -11,16 +11,16 @@ subroutine input
   write(*,'(A)')'===== Input parameter ============================================================='
   write(*,'(A)')
 
-  Nx = 300
+  Nx = 150
   length_x = 30d0
 ! GS
   Ncg = 800
 ! TD
-  T_calc = 400d0
+  T_calc = 11d0/0.024189d0
   dt = 0.01d0 ! 0.01d0
   Nt_iter = aint(T_calc/dt)+1
 
-  RT_mode='kick' ! kick or gs
+  RT_mode='gs' ! kick or gs
   kick_mom = 1d-3
 
 ! collision
@@ -30,7 +30,7 @@ subroutine input
 
   field_max_eV_per_AA = 1d0
   field_duration_fs = 10d0
-  field_omega_eV = 1.55d0
+  field_omega_eV = 100d0
 
   field_max = field_max_eV_per_AA * (0.529d0/27.2d0)
   field_duration = field_duration_fs/0.02418d0
